@@ -141,6 +141,28 @@ You can generate the PageIndex tree structure with this open-source repo, or use
 
 You can follow these steps to generate a PageIndex tree from a PDF document.
 
+## 🐳 Using Docker Container (Recommended)
+
+The easiest way to run PageIndex is using the pre-configured Docker container based on Fedora:
+
+```bash
+# 1. Set up environment
+cp .env.example .env
+# Edit .env to add your OpenAI API key
+
+# 2. Build the container
+docker build -t pageindex:latest .
+
+# 3. Process your document
+mkdir -p data results
+cp /path/to/your/document.pdf data/
+docker run --rm -v $(pwd)/data:/app/data -v $(pwd)/results:/app/results --env-file .env pageindex:latest python3 run_pageindex.py --pdf_path /app/data/document.pdf
+```
+
+For detailed container usage instructions, see [CONTAINER.md](CONTAINER.md).
+
+## 📦 Local Installation
+
 ### 1. Install dependencies
 
 ```bash
