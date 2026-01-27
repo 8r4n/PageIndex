@@ -7,8 +7,57 @@ This directory contains Docker configuration files to run PageIndex in a contain
 - Docker installed on your system
 - Docker Compose (optional, for easier management)
 - OpenAI API key
+- Access to `ghcr.io/8r4n/fedora-dev` container image (or use alternative Dockerfile)
+
+## Authentication for GitHub Container Registry
+
+If the base Fedora dev container image is private, authenticate to GitHub Container Registry:
+
+```bash
+# Create a GitHub Personal Access Token with read:packages permission
+# Then authenticate:
+echo $GITHUB_TOKEN | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+```
+
+## Build Options
+
+### Option 1: Using Custom Fedora Dev Container (Default)
+
+The default `Dockerfile` uses your existing Fedora dev container from GitHub packages:
+
+```bash
+docker build -t pageindex:latest .
+```
+
+### Option 2: Using Official Fedora Base Image
+
+If you don't have access to the custom Fedora dev container, use the alternative Dockerfile:
+
+```bash
+docker build -f Dockerfile.fedora -t pageindex:latest .
+```
 
 ## Quick Start
+
+### Using Makefile (Recommended)
+
+The easiest way to get started is using the provided Makefile:
+
+```bash
+# Initial setup
+make setup
+
+# Edit .env to add your OpenAI API key
+nano .env
+
+# Build the container
+make build
+
+# Process a PDF
+make run PDF_PATH=data/document.pdf
+```
+
+### Manual Setup
 
 ### 1. Set up your environment
 
@@ -147,6 +196,11 @@ If the base Fedora dev container is not accessible, verify:
    ```bash
    echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
    ```
+
+If you see SSL certificate errors during build, this is typically a network/environment issue. Try:
+- Building from a different network
+- Using the alternative Dockerfile: `docker build -f Dockerfile.fedora -t pageindex:latest .`
+- Checking your Docker daemon's network settings
 
 ## Examples
 
