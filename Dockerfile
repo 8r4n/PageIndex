@@ -4,8 +4,9 @@ FROM ghcr.io/8r4n/fedora-dev:latest
 # Set working directory
 WORKDIR /app
 
-# Install Python and pip if not already available
-RUN dnf install -y python3 python3-pip && \
+# Ensure Python and pip are available
+# The dev container may already have these, but we ensure they're present
+RUN python3 --version || dnf install -y python3 python3-pip && \
     dnf clean all
 
 # Copy requirements file

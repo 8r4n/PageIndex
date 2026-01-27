@@ -45,7 +45,7 @@ pdf_name=$(basename "$first_pdf")
 echo "======================================"
 echo "Example 1: Process a single PDF"
 echo "======================================"
-echo "Processing: $pdf_name"
+printf "Processing: %s\n" "$pdf_name"
 echo ""
 
 docker run --rm \
@@ -57,7 +57,7 @@ docker run --rm \
 
 echo ""
 echo "✓ Processing complete!"
-echo "Results saved to: results/${pdf_name%.pdf}_structure.json"
+printf "Results saved to: results/%s_structure.json\n" "${pdf_name%.pdf}"
 echo ""
 
 echo "======================================"

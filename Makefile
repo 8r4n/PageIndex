@@ -65,12 +65,13 @@ endif
 		exit 1; \
 	fi
 	@echo "Processing $(PDF_PATH)..."
+	@PDF_FILE=$$(basename $(PDF_PATH)); \
 	docker run --rm \
 		-v $$(pwd)/data:/app/data \
 		-v $$(pwd)/results:/app/results \
 		--env-file .env \
 		pageindex:latest \
-		python3 run_pageindex.py --pdf_path /app/$(PDF_PATH)
+		python3 run_pageindex.py --pdf_path /app/data/$$PDF_FILE
 
 # Interactive shell
 shell:

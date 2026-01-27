@@ -26,10 +26,9 @@ ENV/
 tests/
 *.pytest_cache/
 
-# Documentation
+# Documentation - keep lightweight docs
 CHANGELOG.md
 LICENSE
-README.md
 
 # Output directories
 results/
