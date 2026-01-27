@@ -13,3 +13,8 @@ log/*
 logs/
 parts/*
 json_results/*
+
+# Docker/Container artifacts
+data/
+results/
+*.tar

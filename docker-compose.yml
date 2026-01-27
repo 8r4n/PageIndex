@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  pageindex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pageindex:latest
+    container_name: pageindex-processor
+    environment:
+      - CHATGPT_API_KEY=${CHATGPT_API_KEY}
+    volumes:
+      # Mount a local directory for input PDFs
+      - ./data:/app/data
+      # Mount a local directory for output results
+      - ./results:/app/results
+    # Override the default command to process a specific PDF
+    # Example: docker-compose run pageindex python3 run_pageindex.py --pdf_path /app/data/document.pdf
+    command: python3 run_pageindex.py --help
