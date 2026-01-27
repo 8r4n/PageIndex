@@ -1,0 +1,42 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test files
+tests/
+*.pytest_cache/
+
+# Documentation - keep lightweight docs
+CHANGELOG.md
+LICENSE
+
+# Output directories
+results/
+*.json
+
+# Environment files
+.env
+
+# Temporary files
+*.tmp
+*.log
