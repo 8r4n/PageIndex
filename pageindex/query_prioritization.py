@@ -166,8 +166,12 @@ Directly return the JSON structure. Do not output anything else."""
             if isinstance(semantic_score, Exception):
                 semantic_score = 0.0
             
-            # Update entry's semantic relevance scores
-            entry.update_importance_score(semantic_score)
+            # Track semantic score for the entry (but don't update importance here)
+            # The caller can choose to update importance based on query results
+            if semantic_score not in entry.semantic_relevance_scores:
+                entry.semantic_relevance_scores.append(semantic_score)
+                # Keep only recent scores
+                entry.semantic_relevance_scores = entry.semantic_relevance_scores[-10:]
             
             # Calculate query pattern score
             pattern_score = self.calculate_query_pattern_score(query, entry)
@@ -225,7 +229,7 @@ Directly return the JSON structure. Do not output anything else."""
                 {
                     'node_id': entry.node_id,
                     'title': entry.title,
-                    'layer': entry.layer,
+                    'layer': entry.layer if hasattr(entry, 'layer') else 'Unknown',
                     'score': score,
                     'importance_score': entry.importance_score,
                     'strength': entry.strength,
@@ -234,7 +238,8 @@ Directly return the JSON structure. Do not output anything else."""
                 for entry, score in top_entries
             ],
             'layer_distribution': {
-                'LML': sum(1 for e, _ in top_entries if e.layer == "LML"),
-                'SML': sum(1 for e, _ in top_entries if e.layer == "SML")
+                'LML': sum(1 for e, _ in top_entries if hasattr(e, 'layer') and e.layer == "LML"),
+                'SML': sum(1 for e, _ in top_entries if hasattr(e, 'layer') and e.layer == "SML"),
+                'Unknown': sum(1 for e, _ in top_entries if not hasattr(e, 'layer'))
             }
         }

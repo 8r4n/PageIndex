@@ -63,7 +63,7 @@ class FadeMemPageIndex:
         
         # Maintenance thread
         self.maintenance_thread = None
-        self.stop_maintenance = False
+        self.stop_maintenance_event = None
         
         # Operation counter for benchmark reports
         self.operation_count = 0
@@ -157,12 +157,16 @@ class FadeMemPageIndex:
                 conflict_result = await self.conflict_resolver.resolve_all_conflicts(all_entries)
                 operations['conflicts_resolved'] = conflict_result['conflicts_found']
                 
-                # Remove resolved conflicts from memory
+                # Remove resolved conflicts from memory and update stats
                 for node_id in conflict_result['removed']:
                     if node_id in self.memory_manager.lml:
                         del self.memory_manager.lml[node_id]
+                        self.memory_manager.stats['lml_entries'] -= 1
+                        self.memory_manager.stats['total_entries'] -= 1
                     elif node_id in self.memory_manager.sml:
                         del self.memory_manager.sml[node_id]
+                        self.memory_manager.stats['sml_entries'] -= 1
+                        self.memory_manager.stats['total_entries'] -= 1
         
         # Memory fusion
         if enable_fusion:
@@ -172,8 +176,14 @@ class FadeMemPageIndex:
                 fusion_result = await self.memory_fusion.fuse_related_entries(sml_entries)
                 operations['entries_fused'] = fusion_result['entries_before'] - fusion_result['entries_after']
                 
-                # Update SML with fused entries
+                # Update SML with fused entries and recalculate stats
                 self.memory_manager.sml = {e.node_id: e for e in fusion_result['fused_entries']}
+                # Update stats to reflect actual count
+                self.memory_manager.stats['sml_entries'] = len(self.memory_manager.sml)
+                self.memory_manager.stats['total_entries'] = (
+                    self.memory_manager.stats['lml_entries'] + 
+                    self.memory_manager.stats['sml_entries']
+                )
         
         # Pruning
         if enable_pruning:
@@ -245,22 +255,27 @@ class FadeMemPageIndex:
         if self.maintenance_thread is not None:
             return
         
+        # Use threading.Event for thread-safe signaling
+        self.stop_maintenance_event = threading.Event()
+        
         def maintenance_loop():
-            while not self.stop_maintenance:
+            while not self.stop_maintenance_event.is_set():
                 time.sleep(self.config['general']['maintenance_interval'])
                 if self.config['general']['auto_maintenance']:
                     # Run maintenance in event loop
                     loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    loop.run_until_complete(self.apply_memory_management())
-                    loop.close()
+                    try:
+                        loop.run_until_complete(self.apply_memory_management())
+                    finally:
+                        loop.close()
         
         self.maintenance_thread = threading.Thread(target=maintenance_loop, daemon=True)
         self.maintenance_thread.start()
     
     def stop_auto_maintenance(self):
         """Stop automatic maintenance thread"""
-        self.stop_maintenance = True
+        if hasattr(self, 'stop_maintenance_event'):
+            self.stop_maintenance_event.set()
         if self.maintenance_thread is not None:
             self.maintenance_thread.join(timeout=5)
             self.maintenance_thread = None

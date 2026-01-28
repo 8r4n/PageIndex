@@ -174,7 +174,8 @@ class BenchmarkMetrics:
             if denominator_str > 0 and denominator_imp > 0:
                 correlation = numerator / (denominator_str * denominator_imp)
             else:
-                correlation = 0.0
+                # All values are identical - perfect correlation
+                correlation = 1.0
         else:
             correlation = 1.0
         

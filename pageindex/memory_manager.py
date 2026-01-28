@@ -317,7 +317,7 @@ class MemoryManager:
         # Only prune dormant entries from SML
         for node_id, entry in list(self.sml.items()):
             time_inactive = current_time - entry.last_accessed
-            if time_inactive > self.dormancy_threshold:
+            if time_inactive >= self.dormancy_threshold:
                 del self.sml[node_id]
                 pruned.append(node_id)
                 self.stats['pruned_entries'] += 1
