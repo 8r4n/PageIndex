@@ -1,0 +1,88 @@
+# FadeMem Memory Management Configuration
+
+# Dual-Layer Memory Architecture
+memory:
+  # Long-term Memory Layer (LML) promotion threshold
+  # Entries with importance >= this threshold will be promoted to LML
+  lml_threshold: 0.7
+  
+  # Short-term Memory Layer (SML) demotion threshold
+  # Entries with importance < this threshold will be demoted to SML
+  sml_threshold: 0.3
+  
+  # Pruning threshold - entries with strength below this will be pruned
+  pruning_threshold: 0.1
+  
+  # Dormancy threshold in days - entries inactive for this long may be pruned
+  dormancy_threshold_days: 30
+
+# Adaptive Forgetting Mechanism
+decay:
+  # Base decay rate (will be adjusted based on importance)
+  base_decay_rate: 0.1
+  
+  # Importance score weights
+  importance_weights:
+    recency: 0.3      # Weight for recency score
+    frequency: 0.3    # Weight for access frequency
+    semantic: 0.4     # Weight for semantic relevance
+
+# Conflict Resolution
+conflict:
+  # Semantic similarity threshold for conflict detection
+  similarity_threshold: 0.8
+  
+  # Model to use for conflict resolution
+  model: "gpt-4o-2024-11-20"
+
+# Dynamic Memory Fusion
+fusion:
+  # Clustering threshold for semantic similarity
+  cluster_threshold: 0.7
+  
+  # Model to use for memory fusion
+  model: "gpt-4o-2024-11-20"
+
+# Query Prioritization
+query:
+  # Model to use for query relevance calculation
+  model: "gpt-4o-2024-11-20"
+  
+  # Number of recent queries to track for pattern analysis
+  query_history_size: 100
+  
+  # Composite score weights for retrieval prioritization
+  score_weights:
+    semantic_relevance: 0.50  # Most important
+    importance_score: 0.20
+    strength: 0.15
+    query_pattern: 0.10
+    recency: 0.05
+
+# Performance Benchmarking
+benchmarks:
+  # Optimal ratio of LML entries (for layer balance calculation)
+  optimal_lml_ratio: 0.3
+  
+  # Time window for temporal consistency calculation (in days)
+  tcs_time_window_days: 1
+  
+  # Enable automatic benchmark report generation
+  auto_generate_reports: true
+  
+  # Report generation frequency (in number of operations)
+  report_frequency: 100
+
+# General Settings
+general:
+  # Enable automatic maintenance (decay, promotion/demotion, pruning)
+  auto_maintenance: true
+  
+  # Maintenance frequency (in seconds)
+  maintenance_interval: 3600  # 1 hour
+  
+  # Save memory state to file automatically
+  auto_save: true
+  
+  # Auto-save frequency (in seconds)
+  save_interval: 7200  # 2 hours
